@@ -1,1 +1,7 @@
-/venv
+db.sqlite3
+venv
+__pycache__
+staticfiles/
+
+# environment variables
+.env.local
