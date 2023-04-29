@@ -8,7 +8,7 @@ export function TasksList() {
   useEffect(() => {
     async function loadTasks() {
       const res = await getAllTasks();
-      setTasks(res.setTasks);
+      setTasks(res.data);
     }
     loadTasks();
   }, []);

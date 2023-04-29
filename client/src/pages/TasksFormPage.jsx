@@ -1,10 +1,10 @@
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { createTask, deleteTask, updateTask, getTask } from "../api/tasks.api";
 import { useNavigate, useParams } from "react-router-dom";
+import { createTask, deleteTask, getTask, updateTask } from "../api/tasks.api";
 import { toast } from "react-hot-toast";
 
-export function TasksFormPage() {
+export function TaskFormPage() {
   const {
     register,
     handleSubmit,
@@ -17,8 +17,8 @@ export function TasksFormPage() {
   const onSubmit = handleSubmit(async (data) => {
     if (params.id) {
       await updateTask(params.id, data);
-      toast.success("Tarea Actualizada", {
-        position: "top-right",
+      toast.success("Task updated", {
+        position: "bottom-right",
         style: {
           background: "#101010",
           color: "#fff",
@@ -26,51 +26,49 @@ export function TasksFormPage() {
       });
     } else {
       await createTask(data);
-      toast.success("Tarea Creada", {
-        position: "top-right",
+      toast.success("New Task Added", {
+        position: "bottom-right",
         style: {
           background: "#101010",
           color: "#fff",
         },
       });
     }
+
     navigate("/tasks");
   });
 
   useEffect(() => {
     async function loadTask() {
       if (params.id) {
-        const res = await getTask(params.id);
-        setValue("title", res.data.title);
-        setValue("description", res.data.description);
+        const { data } = await getTask(params.id);
+        setValue("title", data.title);
+        setValue("description", data.description);
       }
     }
-    loadTask;
+    loadTask();
   }, []);
 
   return (
-    <div className="max-w-xl mx auto">
-      <form onSubmit={onSubmit}>
+    <div className="max-w-xl mx-auto">
+      <form onSubmit={onSubmit} className="bg-zinc-800 p-10 rounded-lg mt-2">
         <input
-          className="bg-zinc-700 p-3 rounded-lg block w-full mb-3"
           type="text"
-          name=""
-          id=""
-          placeholder="title"
+          placeholder="Title"
           {...register("title", { required: true })}
+          className="bg-zinc-700 p-3 rounded-lg block w-full mb-3"
+          autoFocus
         />
-        {errors.title && <span>Title is required</span>}
+
+        {errors.title && <span>This field is required</span>}
 
         <textarea
-          className="bg-zinc-700 p-3 rounded-lg block w-full mb-3"
-          name=""
-          id=""
-          cols="20"
-          rows="4"
           placeholder="Description"
           {...register("description", { required: true })}
-        ></textarea>
-        {errors.description && <span>Description is required</span>}
+          className="bg-zinc-700 p-3 rounded-lg block w-full"
+        />
+
+        {errors.description && <span>This field is required</span>}
 
         <button className="bg-indigo-500 p-3 rounded-lg block w-full mt-3">
           Save
@@ -82,21 +80,21 @@ export function TasksFormPage() {
           <button
             className="bg-red-500 p-3 rounded-lg w-48 mt-3"
             onClick={async () => {
-              const accepted = window.confirm("Are you sure");
+              const accepted = window.confirm("Are you sure?");
               if (accepted) {
                 await deleteTask(params.id);
-                toast.success("Tarea Eliminada", {
-                  position: "top-right",
+                toast.success("Task Removed", {
+                  position: "bottom-right",
                   style: {
                     background: "#101010",
                     color: "#fff",
                   },
                 });
+                navigate("/tasks");
               }
-              navigate("/tasks");
             }}
           >
-            Delete
+            delete
           </button>
         </div>
       )}
